@@ -1,10 +1,32 @@
+# Workflow name (mandatory)
 name: First Workflow
-on: workflow_dispatch
+# Event that triggers the workflow (can be a list of possible events)
+on: [push, workflow_dispatch]
+# Jobs to be executed
 jobs:
+  # Job name (mandatory)
   first-job:
+    # Machine on which the job will run (mandatory)
+    runs-on: ubuntu-latest
+    # Steps to be executed in the job
+    steps:
+      - name: Write Messages
+        # this is a multiline command, run is the keyword for shell commands
+        run: |
+          echo "Hello!"
+          echo "Goodbye!"
+      - name: Output Github context
+        # this is a expression, and the sytax is ${{}}
+        run: echo "${{ toJSON(github) }}"
+  action-job:
+    # this adds a dependency on the first job (they will run sequentially)
+    needs: first-job
     runs-on: ubuntu-latest
     steps:
-      - name: Print greeting
-        run: echo "Hello!"
-      - name: Print goodbye
-        run: echo "Goodbye!"
+      - name: Checkout
+        # the keyword for actions is uses (you can specify a version using @ and a branch using #)
+        uses: actions/checkout@v3
+        # you can add custom parameters to the action
+        with:
+          # this is the branch that the action will checkout
+          ref: main
